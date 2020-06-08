@@ -1,0 +1,70 @@
+//
+// Created by cout970 on 5/6/20.
+//
+
+//println = { i | [i, i] };
+//x = 183449;
+//y = -232900;
+
+
+test = 10;
+print test + 20 / 3;
+
+sum 20, 3, test;
+
+["a", "b"];
+
+x = 183.449
+y = -232900
+
+1;
+1.123;
+
+list = [1,2,3,4];
+
+map = func { x + 3 };
+
+(1, 2);
+
+fib = { n | fib (n - 1) + fib (n - 2) };
+
+myFunc = {
+ if true { return 3 }
+
+ while { true }, { x = x + 3 }
+
+ 4
+};
+
+[1, 2, 3, 4]
+     .map { it * it }
+     .forEach { println it };
+
+//     [1,2,3].map ({ it * it }.forEach { println it })
+//     ([1,2,3].map { it * it }).forEach { println it }
+
+each (map [1, 2, 3, 4], { it * it }), { println it };
+
+for list, { i | i * i };
+
+for list, { i |
+  println i
+};
+
+func = { i, j, k |
+    println (i * j * k == 1)
+};
+
+func 1, 2, 3
+
+fib = { n | fib (n - 1) + fib (n - 2) };
+
+fib 5
+
+type Bool = True | False;
+type Result = Ok(value) | Err(error);
+type User = User(name, email, password_hash, age);
+
+User "John", "john@mail.com", "A2746BF923EC", 18;
+
+

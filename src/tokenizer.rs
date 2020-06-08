@@ -3,8 +3,8 @@ use crate::source::{SourceReader, Span};
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Token {
     Identifier(String),
-    FloatingLiteral(String),
-    IntegerLiteral(String),
+    FloatLiteral(String),
+    IntLiteral(String),
     StringLiteral(String),
     // Keywords
     Auto,
@@ -96,7 +96,7 @@ pub enum Token {
 
 pub type TokenSpan = (Span, Span);
 
-struct Tokenizer {
+pub struct Tokenizer {
     read: SourceReader,
 }
 
@@ -332,38 +332,38 @@ impl Tokenizer {
 
     fn identifier_to_token(id: String) -> Token {
         match id.as_str() {
-            "auto" => Token::Auto,
-            "break" => Token::Break,
-            "case" => Token::Case,
-            "char" => Token::Char,
-            "const" => Token::Const,
-            "continue" => Token::Continue,
-            "default" => Token::Default,
-            "do" => Token::Do,
-            "double" => Token::Double,
-            "else" => Token::Else,
-            "enum" => Token::Enum,
+            // "auto" => Token::Auto,
+            // "break" => Token::Break,
+            // "case" => Token::Case,
+            // "char" => Token::Char,
+            // "const" => Token::Const,
+            // "continue" => Token::Continue,
+            // "default" => Token::Default,
+            // "do" => Token::Do,
+            // "double" => Token::Double,
+            // "else" => Token::Else,
+            // "enum" => Token::Enum,
             "extern" => Token::Extern,
-            "float" => Token::Float,
-            "for" => Token::For,
-            "goto" => Token::Goto,
-            "if" => Token::If,
-            "int" => Token::Int,
-            "long" => Token::Long,
-            "register" => Token::Register,
+            // "float" => Token::Float,
+            // "for" => Token::For,
+            // "goto" => Token::Goto,
+            // "if" => Token::If,
+            // "int" => Token::Int,
+            // "long" => Token::Long,
+            // "register" => Token::Register,
             "return" => Token::Return,
-            "short" => Token::Short,
-            "signed" => Token::Signed,
-            "sizeof" => Token::Sizeof,
-            "static" => Token::Static,
-            "struct" => Token::Struct,
-            "switch" => Token::Switch,
-            "typedef" => Token::Typedef,
-            "union" => Token::Union,
-            "unsigned" => Token::Unsigned,
-            "void" => Token::Void,
-            "volatile" => Token::Volatile,
-            "while" => Token::While,
+            // "short" => Token::Short,
+            // "signed" => Token::Signed,
+            // "sizeof" => Token::Sizeof,
+            // "static" => Token::Static,
+            // "struct" => Token::Struct,
+            // "switch" => Token::Switch,
+            "type" => Token::Typedef,
+            // "union" => Token::Union,
+            // "unsigned" => Token::Unsigned,
+            // "void" => Token::Void,
+            // "volatile" => Token::Volatile,
+            // "while" => Token::While,
             _ => Token::Identifier(id)
         }
     }
@@ -387,12 +387,12 @@ impl Tokenizer {
                     if let b'f' | b'F' | b'l' | b'L' = self.read.current() {
                         self.read.shift();
                     }
-                    return Token::FloatingLiteral(id);
+                    Token::FloatLiteral(id)
                 } else {
                     while let b'u' | b'U' | b'l' | b'L' = self.read.current() {
                         self.read.shift();
                     }
-                    return Token::IntegerLiteral(id);
+                    Token::IntLiteral(id)
                 }
             } else if self.read.current() == b'x' || self.read.current() == b'X' {
                 // hex number
@@ -412,7 +412,7 @@ impl Tokenizer {
                 while let b'u' | b'U' | b'l' | b'L' = self.read.current() {
                     self.read.shift();
                 }
-                return Token::IntegerLiteral(id);
+                Token::IntLiteral(id)
             } else if self.read.current() == b'.' {
                 // decimal number
                 id.push('0');
@@ -424,13 +424,13 @@ impl Tokenizer {
                 if let b'f' | b'F' | b'l' | b'L' = self.read.current() {
                     self.read.shift();
                 }
-                return Token::FloatingLiteral(id);
+                Token::FloatLiteral(id)
             } else {
                 // just zero
                 while let b'u' | b'U' | b'l' | b'L' = self.read.current() {
                     self.read.shift();
                 }
-                return Token::IntegerLiteral("0".to_string());
+                Token::IntLiteral("0".to_string())
             }
         } else if self.read.current() == b'.' {
             id.push('0');
@@ -442,7 +442,7 @@ impl Tokenizer {
             if let b'f' | b'F' | b'l' | b'L' = self.read.current() {
                 self.read.shift();
             }
-            return Token::FloatingLiteral(id);
+            Token::FloatLiteral(id)
         } else {
             self.read_digits(&mut id);
 
@@ -455,7 +455,7 @@ impl Tokenizer {
                 if let b'f' | b'F' | b'l' | b'L' = self.read.current() {
                     self.read.shift();
                 }
-                return Token::FloatingLiteral(id);
+                Token::FloatLiteral(id)
             } else if self.read.current() == b'e' || self.read.current() == b'E' {
                 id.push('.');
                 id.push('0');
@@ -464,12 +464,12 @@ impl Tokenizer {
                 if let b'f' | b'F' | b'l' | b'L' = self.read.current() {
                     self.read.shift();
                 }
-                return Token::FloatingLiteral(id);
+                Token::FloatLiteral(id)
             } else {
                 while let b'u' | b'U' | b'l' | b'L' = self.read.current() {
                     self.read.shift();
                 }
-                return Token::IntegerLiteral(id);
+                Token::IntLiteral(id)
             }
         }
     }
@@ -570,7 +570,7 @@ mod tests {
         assert_eq!(Token::RightParen, tokenizer.next_tk());   // )
         assert_eq!(Token::LeftBrace, tokenizer.next_tk());    // {
         assert_eq!(Token::Return, tokenizer.next_tk());   // return
-        assert_eq!(Token::IntegerLiteral("0".to_string()), tokenizer.next_tk());       // 0
+        assert_eq!(Token::IntLiteral("0".to_string()), tokenizer.next_tk());       // 0
         assert_eq!(Token::Semicolon, tokenizer.next_tk());    // ;
         assert_eq!(Token::RightBrace, tokenizer.next_tk());   // }
         assert_eq!(Token::Eof, tokenizer.next_tk());          // EOF
@@ -591,31 +591,31 @@ mod tests {
         let reader = SourceReader::new(source);
         let mut tokenizer = Tokenizer::new(reader);
 
-        assert_eq!(Token::IntegerLiteral("0x0123456789ABCDEF".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::IntegerLiteral("0x0123456789ABCDEF".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::IntegerLiteral("0xABC".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::IntegerLiteral("0x012345".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::IntegerLiteral("0x012345".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::IntegerLiteral("0x012345".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::IntegerLiteral("0x012345".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::IntegerLiteral("0x012345".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::IntegerLiteral("0x012345".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::IntegerLiteral("0x012345".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::IntegerLiteral("0x012345".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::IntegerLiteral("01234567".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::IntegerLiteral("01234567".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::IntegerLiteral("01234567".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::FloatingLiteral("123456.0e+123".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::FloatingLiteral("123456.0e+10".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::FloatingLiteral("123456.0e+123".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::FloatingLiteral("123456.0e-123".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::FloatingLiteral("123456.0e-123".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::FloatingLiteral("0123456.1325".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::FloatingLiteral("0.123".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::FloatingLiteral("0.123".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::FloatingLiteral("0.123e+123".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::FloatingLiteral("123.0e+12".to_string()), tokenizer.next_tk());
-        assert_eq!(Token::FloatingLiteral("123.0e+12".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::IntLiteral("0x0123456789ABCDEF".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::IntLiteral("0x0123456789ABCDEF".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::IntLiteral("0xABC".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::IntLiteral("0x012345".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::IntLiteral("0x012345".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::IntLiteral("0x012345".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::IntLiteral("0x012345".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::IntLiteral("0x012345".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::IntLiteral("0x012345".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::IntLiteral("0x012345".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::IntLiteral("0x012345".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::IntLiteral("01234567".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::IntLiteral("01234567".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::IntLiteral("01234567".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::FloatLiteral("123456.0e+123".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::FloatLiteral("123456.0e+10".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::FloatLiteral("123456.0e+123".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::FloatLiteral("123456.0e-123".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::FloatLiteral("123456.0e-123".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::FloatLiteral("0123456.1325".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::FloatLiteral("0.123".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::FloatLiteral("0.123".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::FloatLiteral("0.123e+123".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::FloatLiteral("123.0e+12".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::FloatLiteral("123.0e+12".to_string()), tokenizer.next_tk());
     }
 
     #[test]
@@ -647,7 +647,7 @@ mod tests {
         let source = CodeSource::str(".123e123l");
         let reader = SourceReader::new(source);
         let mut tokenizer = Tokenizer::new(reader);
-        assert_eq!(Token::FloatingLiteral(".123e+123".to_string()), tokenizer.next_tk());
+        assert_eq!(Token::FloatLiteral(".123e+123".to_string()), tokenizer.next_tk());
     }
 
 //    #[test]

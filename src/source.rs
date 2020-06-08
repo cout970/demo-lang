@@ -10,8 +10,8 @@ pub enum CodeSource {
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct Span {
-    line: u32,
-    column: u32,
+    pub line: u32,
+    pub column: u32,
 }
 
 const BUFFER_SIZE: usize = 64;
