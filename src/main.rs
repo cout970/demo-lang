@@ -38,3 +38,26 @@ fn main() {
 
     println!("{:#?}", result);
 }
+
+
+#[test]
+fn hello_world() {
+    let source = CodeSource::str("print \"hello world\"");
+    let reader = SourceReader::new(source);
+    let tokenizer = Tokenizer::new(reader);
+    let mut parser = Parser::new(tokenizer);
+    let program = parser.parse_program().expect("Unable to parse program");
+
+    let mut compiler = Compiler::new();
+    let compiled_program = compiler.compile(program).expect("Unable to compile program");
+
+    println!("{:#?}", compiled_program);
+
+
+    let mut runtime = Runtime::new();
+    register_builtins(&mut runtime);
+
+    let result = runtime.run(compiled_program);
+
+    println!("{:#?}", result);
+}

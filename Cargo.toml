@@ -1,7 +1,10 @@
 [package]
-name = "c_compiler"
+name = "demo_lang"
 version = "0.1.0"
 authors = ["cout970 <thecout970@gmail.com>"]
 edition = "2018"
+description = """
+Simple language with minimal syntax but high level enough to do cool stuff
+"""
 
 [dependencies]
